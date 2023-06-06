@@ -1,10 +1,10 @@
-import cv2
+from io import BytesIO
 import numpy as np
 import tensorflow as tf
 from fastapi import FastAPI,File,UploadFile
 import uvicorn
 from PIL import Image
-from io import BytesIO
+
 
 #Define Function
 labels = ['Jamur Enoki', 'Jamur Shimeji Coklat', 'Jamur Shimeji Putih', 'Jamur Tiram']
@@ -14,10 +14,12 @@ def process(file)-> Image.Image:
     return image
 
 def predict(image: Image.Image):
-    loaded_model = tf.keras.models.load_model('YangJamurJamuraja_v2.h5')
-    image = tf.image.resize(image, (224,224))
-    image = (cv2.cvtColor(image.numpy().astype(np.uint8),cv2.COLOR_BGR2RGB))
-    image = np.expand_dims(image/255,0)
+    loaded_model = tf.keras.models.load_model('mvp_model.h5')
+    image = tf.image.resize(np.array(image), (224,224))
+    image = Image.fromarray(np.uint8(image.numpy()))
+    image = image.convert("RGB")
+    image = np.expand_dims(np.array(image)/255,0)
+
     hasil = loaded_model.predict(image)
     idx = hasil.argmax()
     return labels[idx]
@@ -32,4 +34,5 @@ async def predict_fastapi(file: UploadFile = File(...)):
     prediction = predict(image)
     return prediction
 
-uvicorn.run(app, host='0.0.0.0', port=3000)
+if __name__ == '__main__':
+    uvicorn.run(app, host='0.0.0.0', port=3000)
