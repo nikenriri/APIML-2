@@ -28,7 +28,7 @@ def predict(image: Image.Image):
 #FASTAPI
 app = FastAPI()
 
-@app.post("/predict/image")
+@app.get("/predict/image")
 async def predict_fastapi(file: UploadFile = File(...)):
     image = process(await file.read())
     prediction = predict(image)
