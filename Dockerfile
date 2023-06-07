@@ -14,6 +14,6 @@ ENV PYTHONUNBUFFERED=1
 
 ENV HOST 0.0.0.0
 
-EXPOSE 3000
+EXPOSE 8000
 
 CMD [ "python", "main.py" ]
